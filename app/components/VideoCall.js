@@ -14,7 +14,7 @@ const VideoCall = () => {
 
   useEffect(() => {
     // Initialize Socket.io connection to the server
-    socketRef.current = io('http://localhost:4000');
+    socketRef.current = io(SOCKET_SERVER_URL);
 
     // Request access to the user's camera and microphone
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })

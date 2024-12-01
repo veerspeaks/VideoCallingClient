@@ -1,16 +1,48 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import io from 'socket.io-client';
-
+import { MicrophoneIcon, VideoCameraIcon, PhoneIcon } from '@heroicons/react/24/solid';
+import { MicrophoneIcon as MicMutedIcon, VideoCameraIcon as VideoOffIcon } from '@heroicons/react/24/outline';
 
 const SOCKET_SERVER_URL = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:4000';
+
 const VideoCall = () => {
+  const [isAudioMuted, setIsAudioMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(false);
+  
   // Refs to store video elements and connections
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const socketRef = useRef(null);
+
+  // Add new function to handle media controls
+  const toggleAudio = () => {
+    const stream = localVideoRef.current.srcObject;
+    stream.getAudioTracks().forEach(track => {
+      track.enabled = !track.enabled;
+    });
+    setIsAudioMuted(!isAudioMuted);
+  };
+
+  const toggleVideo = () => {
+    const stream = localVideoRef.current.srcObject;
+    stream.getVideoTracks().forEach(track => {
+      track.enabled = !track.enabled;
+    });
+    setIsVideoOff(!isVideoOff);
+  };
+
+  const endCall = () => {
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+    }
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+    }
+    // You might want to add navigation logic here
+  };
 
   useEffect(() => {
     // Initialize Socket.io connection to the server
@@ -105,22 +137,69 @@ const VideoCall = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Video Call</h1>
-      <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-        <video
-          ref={localVideoRef}
-          autoPlay
-          playsInline
-          muted
-          style={{ width: '45%', border: '1px solid black' }}
-        />
-        <video
-          ref={remoteVideoRef}
-          autoPlay
-          playsInline
-          style={{ width: '45%', border: '1px solid black' }}
-        />
+    <div className="min-h-screen bg-gray-900 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="relative aspect-video bg-gray-800 rounded-lg overflow-hidden shadow-2xl">
+          {/* Remote Video (Full Screen) */}
+          <video
+            ref={remoteVideoRef}
+            autoPlay
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          
+          {/* Local Video (Picture-in-Picture) */}
+          <div className="absolute top-4 right-4 w-1/4 aspect-video">
+            <video
+              ref={localVideoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full h-full object-cover rounded-lg border-2 border-white/20 shadow-lg"
+            />
+          </div>
+
+          {/* Controls Overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
+            <div className="flex items-center justify-center gap-6">
+              {/* Audio Control */}
+              <button
+                onClick={toggleAudio}
+                className={`p-4 rounded-full ${
+                  isAudioMuted ? 'bg-red-500' : 'bg-white'
+                } hover:opacity-90 transition-all`}
+              >
+                {isAudioMuted ? (
+                  <MicMutedIcon className="w-6 h-6 text-white" />
+                ) : (
+                  <MicrophoneIcon className="w-6 h-6 text-gray-900" />
+                )}
+              </button>
+
+              {/* End Call */}
+              <button
+                onClick={endCall}
+                className="p-4 rounded-full bg-red-500 hover:bg-red-600 transition-all"
+              >
+                <PhoneIcon className="w-6 h-6 text-white rotate-[135deg]" />
+              </button>
+
+              {/* Video Control */}
+              <button
+                onClick={toggleVideo}
+                className={`p-4 rounded-full ${
+                  isVideoOff ? 'bg-red-500' : 'bg-white'
+                } hover:opacity-90 transition-all`}
+              >
+                {isVideoOff ? (
+                  <VideoOffIcon className="w-6 h-6 text-white" />
+                ) : (
+                  <VideoCameraIcon className="w-6 h-6 text-gray-900" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -137,19 +137,19 @@ const VideoCall = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-900 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="relative aspect-video bg-gray-800 rounded-lg overflow-hidden shadow-2xl">
+    <div className="h-screen bg-gray-900">
+      <div className="h-full max-w-7xl mx-auto">
+        <div className="relative h-full md:aspect-video bg-gray-800 overflow-hidden shadow-2xl">
           {/* Remote Video (Full Screen) */}
           <video
             ref={remoteVideoRef}
             autoPlay
             playsInline
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           />
           
           {/* Local Video (Picture-in-Picture) */}
-          <div className="absolute top-4 right-4 w-1/4 aspect-video">
+          <div className="absolute top-4 right-4 w-28 md:w-1/4 aspect-video z-10">
             <video
               ref={localVideoRef}
               autoPlay
@@ -160,41 +160,41 @@ const VideoCall = () => {
           </div>
 
           {/* Controls Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-            <div className="flex items-center justify-center gap-6">
+          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black/80 to-transparent">
+            <div className="flex items-center justify-center gap-4 md:gap-6">
               {/* Audio Control */}
               <button
                 onClick={toggleAudio}
-                className={`p-4 rounded-full ${
+                className={`p-3 md:p-4 rounded-full ${
                   isAudioMuted ? 'bg-red-500' : 'bg-white'
                 } hover:opacity-90 transition-all`}
               >
                 {isAudioMuted ? (
-                  <MicMutedIcon className="w-6 h-6 text-white" />
+                  <MicMutedIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 ) : (
-                  <MicrophoneIcon className="w-6 h-6 text-gray-900" />
+                  <MicrophoneIcon className="w-5 h-5 md:w-6 md:h-6 text-gray-900" />
                 )}
               </button>
 
               {/* End Call */}
               <button
                 onClick={endCall}
-                className="p-4 rounded-full bg-red-500 hover:bg-red-600 transition-all"
+                className="p-3 md:p-4 rounded-full bg-red-500 hover:bg-red-600 transition-all"
               >
-                <PhoneIcon className="w-6 h-6 text-white rotate-[135deg]" />
+                <PhoneIcon className="w-5 h-5 md:w-6 md:h-6 text-white rotate-[135deg]" />
               </button>
 
               {/* Video Control */}
               <button
                 onClick={toggleVideo}
-                className={`p-4 rounded-full ${
+                className={`p-3 md:p-4 rounded-full ${
                   isVideoOff ? 'bg-red-500' : 'bg-white'
                 } hover:opacity-90 transition-all`}
               >
                 {isVideoOff ? (
-                  <VideoOffIcon className="w-6 h-6 text-white" />
+                  <VideoOffIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 ) : (
-                  <VideoCameraIcon className="w-6 h-6 text-gray-900" />
+                  <VideoCameraIcon className="w-5 h-5 md:w-6 md:h-6 text-gray-900" />
                 )}
               </button>
             </div>
